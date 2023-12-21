@@ -32,7 +32,10 @@ async function run() {
 
     const taskCollection = client.db("taskManagement").collection("allTasks")
     const userCollection = client.db("taskManagement").collection("users")
-
+    app.get("/users", async (req, res) => {
+        const users = await userCollection.find().toArray();
+        res.send(users);
+      });
     app.post("/users", async (req, res) => {
         const query = { email: req.body.email };
         const existingUser = await userCollection.findOne(query);
@@ -44,6 +47,17 @@ async function run() {
           res.send(result);
         }
       });
+
+      app.get("/tasks", async (req, res) => {
+        const tasks = await taskCollection.find().toArray();
+        res.send(tasks);
+      })
+
+      app.post("/tasks", async (req, res) => {
+        const newTask = req.body;
+        const result = await taskCollection.insertOne(newTask);
+        res.send(result);
+            })
 
 
     await client.db("admin").command({ ping: 1 });
