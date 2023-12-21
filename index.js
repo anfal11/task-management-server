@@ -31,8 +31,19 @@ async function run() {
     await client.connect();
 
     const taskCollection = client.db("taskManagement").collection("allTasks")
+    const userCollection = client.db("taskManagement").collection("users")
 
-    
+    app.post("/users", async (req, res) => {
+        const query = { email: req.body.email };
+        const existingUser = await userCollection.findOne(query);
+        if (existingUser) {
+          res.send({ message: "user already exists", insertedId: null });
+        } else {
+          const newUser = req.body;
+          const result = await userCollection.insertOne(newUser);
+          res.send(result);
+        }
+      });
 
 
     await client.db("admin").command({ ping: 1 });
